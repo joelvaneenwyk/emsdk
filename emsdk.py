@@ -2730,12 +2730,21 @@ def unset_env(key):
 def construct_env_with_vars(env_vars_to_add):
   env_string = ''
   if env_vars_to_add:
-    info('Setting environment variables:')
+    info('Setting environment variables:%s'%env_vars_to_add)
 
-    for key, value in env_vars_to_add:
+    for key, value in list(env_vars_to_add):
+      if key == 'EMSDK_PYTHON':
+        # When using our bundled python we never want the user's
+        # PYTHONHOME or PYTHONPATH
+        # See https://github.com/emscripten-core/emsdk/issues/598
+        env_string += unset_env('PYTHONHOME')
+        env_string += unset_env('PYTHONPATH')
+
       # Don't set env vars which are already set to the correct value.
       if key in os.environ and to_unix_path(os.environ[key]) == to_unix_path(value):
+        env_vars_to_add.remove((key, value))
         continue
+
       info(key + ' = ' + value)
       if POWERSHELL:
         env_string += '$env:' + key + '="' + value + '"\n'
@@ -2748,12 +2757,6 @@ def construct_env_with_vars(env_vars_to_add):
       else:
         assert False
 
-    if 'EMSDK_PYTHON' in env_vars_to_add:
-      # When using our bundled python we never want the user's
-      # PYTHONHOME or PYTHONPATH
-      # See https://github.com/emscripten-core/emsdk/issues/598
-      env_string += unset_env('PYTHONHOME')
-      env_string += unset_env('PYTHONPATH')
 
   # Remove any environment variables that might have been set by old or
   # inactive tools/sdks.  For example, we set EM_CACHE for older versions

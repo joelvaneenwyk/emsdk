@@ -36,7 +36,7 @@ if [ -n "${BASH_SOURCE-}" ]; then
 elif [ -n "${ZSH_VERSION-}" ]; then
   CURRENT_SCRIPT="${(%):-%x}"
 elif [ -n "${KSH_VERSION-}" ]; then
-  CURRENT_SCRIPT=${.sh.file}
+  CURRENT_SCRIPT="${.sh.file}"
 fi
 
 if [ -n "${CURRENT_SCRIPT-}" ]; then
@@ -51,7 +51,7 @@ if [ -n "${CURRENT_SCRIPT-}" ]; then
       SYMDIR="."
     fi
     FULLDIR="$DIR/$SYMDIR"
-    DIR=$(cd "$FULLDIR" > /dev/null 2>&1; /bin/pwd)
+    DIR=$(cd "$FULLDIR" > /dev/null 2>&1 || true; /bin/pwd)
     unset SYMDIR
     unset FULLDIR
   fi
@@ -64,10 +64,9 @@ if [ ! -f "$DIR/emsdk.py" ]; then
   echo 1>&2
   echo "A possible solution is to source this script while in the 'emsdk' directory." 1>&2
   echo 1>&2
-  unset DIR
-  return
+else
+  # Force emsdk to use bash syntax so that this works in windows + bash too
+  eval `EMSDK_BASH=1 "$DIR/emsdk" construct_env`
 fi
 
-# Force emsdk to use bash syntax so that this works in windows + bash too
-eval `EMSDK_BASH=1 $DIR/emsdk construct_env`
 unset DIR

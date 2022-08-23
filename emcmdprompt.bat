@@ -1,1 +1,1 @@
-@cmd /k call emsdk_env.bat
+@cmd /d /k call "%~dp0emsdk_env.bat" %*
