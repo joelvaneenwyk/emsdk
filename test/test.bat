@@ -1,4 +1,4 @@
-:: equivilent of test.sh as windows bat file
+:: Equivalent of test.sh as windows bat file
 set PATH=%~dp0..\
 CALL emsdk install latest
 CALL emsdk activate latest
