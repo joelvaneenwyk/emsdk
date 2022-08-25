@@ -1,6 +1,8 @@
 *.pyc
 __pycache__
 
+/.vscode
+
 # Support for --embedded configs
 /.emscripten
 /.emscripten.old
